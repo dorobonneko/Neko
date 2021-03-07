@@ -7,6 +7,7 @@ import com.moe.neko.SizeReady;
 
 public class  ViewTarget<V extends View> implements Target {
     private V view;
+    private SizeReady size;
     public ViewTarget(V v){
         this.view=v;
     }
@@ -46,17 +47,31 @@ public class  ViewTarget<V extends View> implements Target {
         getView().setBackground(s);
     }
 
+    @Override
+    public void onLoadCleared(Drawable c) {
+        getView().setBackground(c);
+    }
+
+    @Override
+    public void removeCallback(SizeReady callback) {
+        size=null;
+    }
+
+
+
 
 
     
     
     @Override
     public void getSize(final SizeReady callback) {
+        size=callback;
         getView().post(new Runnable(){
 
                 @Override
                 public void run() {
-                    callback.onSizeReady(getView().getWidth(),getView().getHeight());
+                    if(size!=null)
+                    size.onSizeReady(getView().getWidth(),getView().getHeight());
                 }
             });
     }

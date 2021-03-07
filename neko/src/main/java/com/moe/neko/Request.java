@@ -1,101 +1,123 @@
 package com.moe.neko;
 import android.graphics.drawable.BitmapDrawable;
 
-public class Request implements SizeReady,LoadCallback{
+public class Request implements SizeReady,LoadCallback {
     private RequestOptions.RequestBitmapOptions options;
     private Target target;
     private Status status;
     private Resource resource;
-    private boolean cancel,recycle;
+    private boolean recycle;
     private Engine mEngine;
-    Request(RequestOptions.RequestBitmapOptions options,Target t){
-        this.options=options;
-        this.target=t;
-        this.mEngine=options.requestManager.getEngine();
-        }
+    private Engine.EngineJob job;
+    Request(RequestOptions.RequestBitmapOptions options, Target t) {
+        this.options = options;
+        this.target = t;
+        this.mEngine = options.requestManager.getEngine();
+    }
 
     public boolean isEquivalentTo(Request previous) {
-        return false;
+        return options.getKey().equals(previous.options.getKey())&&!previous.recycle;
     }
-    public void begin(){
-        if(recycle)
-            throw new IllegalStateException("it is recycle ,can't run");
+    public void begin() {
+        if (recycle){
+            return;
+            }
         if (status == Status.RUNNING) {
             throw new IllegalArgumentException("Cannot restart a running request");
         }
 
-       if (status == Status.COMPLETE) {
+        if (status == Status.COMPLETE) {
             //如果当前状态处于已经加载完成，则回调资源已经加载完毕
             onResourceReady(resource);
             return;
         }
 
-        status=Status.WAITING_FOR_SIZE;
-        if((options.w>0&&options.h>0)||options.w==-2||options.h==-2){
-            onSizeReady(options.w,options.h);
-        }else{
+        status = Status.WAITING_FOR_SIZE;
+        if ((options.w > 0 && options.h > 0) || options.w == -2 || options.h == -2) {
+            onSizeReady(options.w, options.h);
+        } else {
             target.getSize(this);
         }
-        if(status==Status.RUNNING||status==Status.WAITING_FOR_SIZE){
+        if (status == Status.RUNNING || status == Status.WAITING_FOR_SIZE) {
             target.onLoadStart(options.placeHolder);
+        }else{
+            throw new RuntimeException("逻辑错误");
         }
     }
     @Override
-    public void onSizeReady(int w,int h){
+    public void onSizeReady(int w, int h) {
         if (status != Status.WAITING_FOR_SIZE) {
             //如果当前状态不处于等待获取View大小，则返回结束
             return;
         }
-        status=Status.RUNNING;
+        status = Status.RUNNING;
         //判断内存缓存
         Resource<Image> res=options.requestManager.getCachePool().getCache(options.getKey());
-        if(res!=null){
+        if (res != null) {
             onResourceReady(res);
             return;
         }
         //加载图片
-        mEngine.load(options.data,w,h,options.requestManager,options,this);
+        job=mEngine.load(options.data, w, h, options.requestManager, options, this);
     }
 
     @Override
     public void onResourceReady(final Resource<Image> res) {
-        status=Status.COMPLETE;
-        resource=res;
+        if (recycle||target.getRequest()!=Request.this) {
+            res.release();
+            return;
+        }
+        status = Status.COMPLETE;
+        resource = res;
         options.requestManager.getHandler().post(new Runnable(){
-            public void run(){
-        res.acquire();
-        target.onLoadSuccess(new BitmapDrawable(res.image.getBitmap()));
-        }});
+                public void run() {
+                    if(recycle||target.getRequest()!=Request.this)
+                        res.release();
+                        else{
+                           
+                    res.acquire();
+                    
+                    target.onLoadSuccess(new BitmapDrawable(res.image.getBitmap()));
+                    }
+                }});
     }
 
     @Override
     public void notifyFailed() {
-        status=Status.FAILD;
-        
-        target.onLoadFailed(options.error);
+        status = Status.FAILD;
+        options.requestManager.getHandler().post(new Runnable(){
+                public void run() {
+                    target.onLoadFailed(options.error);
+                }});
     }
-    public boolean isRunning(){
-        return status==Status.RUNNING;
+    public boolean isRunning() {
+        return status == Status.RUNNING;
     }
-    public void pause(){
-        
+    public void pause() {
+
     }
-    public boolean isComplete(){
-        return status==Status.COMPLETE;
+    public boolean isComplete() {
+        return status == Status.COMPLETE;
     }
-    public boolean isCancelled(){
-        return cancel;
+    public boolean isCancelled() {
+        return status == Status.CANCEL;
     }
-    public void clear(){
-        cancel=true;
-        if(status==Status.COMPLETE){
+    public void clear() {
+        if (resource!=null) {
             resource.release();
         }
+        target.removeCallback(this);
+        status = Status.CANCEL;
+        job.cancel();
+        job=null;
+        target.onLoadCleared(options.placeHolder);
+        
     }
-    public void recycle(){
-        recycle=true;
+    public void recycle() {
+        recycle = true;
+        target=null;
     }
-    enum Status{
-        WAITING_FOR_SIZE,RUNNING,COMPLETE,FAILD;
+    enum Status {
+        WAITING_FOR_SIZE,RUNNING,COMPLETE,FAILD,CANCEL;
     }
 }

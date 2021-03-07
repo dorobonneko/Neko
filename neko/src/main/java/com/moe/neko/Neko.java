@@ -26,6 +26,7 @@ public class Neko {
                 if(req==null){
                     checkBuilder();
                     req=builder.build(mEngine);
+                    requestManagers.put(obj,req);
                     }
             }
         }

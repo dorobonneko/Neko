@@ -12,8 +12,19 @@ public class RequestManager {
     RequestTracker requestTracker=new RequestTracker();
     CachePool mCache=new CachePool();
     Set<Target> targetTracker=Collections.newSetFromMap(new WeakHashMap<Target,Boolean>());
-    public void clear(Request request){
-        requestTracker.clearRemoveAndRecycle(request);
+    public void clear(Target<?> request){
+        untrackOrDelegate(request);
+    }
+    private void untrackOrDelegate(Target<?> target) {
+        boolean isOwnedByUs = untrack(target);
+        if (!isOwnedByUs && !targetTracker.remove(target) && target.getRequest() != null) {
+            Request request = target.getRequest();
+            target.setRequest(null);
+            request.clear();
+        }
+    }
+    private boolean untrack(Target<?> t){
+        return requestTracker.untrack(t.getRequest());
     }
     public void track(Request request,Target t){
         targetTracker.add(t);

@@ -94,6 +94,7 @@ public class BitmapPool extends LinkedHashMap<Integer,Stack<Bitmap>> implements 
 			if (list.search(bitmap) == -1)
 			{
 				list.push(bitmap);
+                bitmap.eraseColor(0);
 				currentSize += size;
 				trimToSize(maxSize);
 			}

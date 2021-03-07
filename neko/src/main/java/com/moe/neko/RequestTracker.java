@@ -24,7 +24,9 @@ public class RequestTracker {
         }
     }
 
-   
+   public boolean untrack(Request r){
+       return requests.remove(r)||pendingRequests.remove(r);
+   }
 
     /**
      * Stops tracking the given request, clears, and recycles it, and returns {@code true} if the

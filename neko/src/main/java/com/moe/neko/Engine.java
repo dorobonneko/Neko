@@ -15,18 +15,19 @@ import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Paint;
+import java.util.concurrent.LinkedBlockingDeque;
 
 public class Engine {
     ThreadPoolExecutor tpe;
     private List<RequestHandler> requestHandlers;
     public Engine(List<RequestHandler> requestHandlers) {
-        tpe = new ThreadPoolExecutor(6, 12, 30, TimeUnit.SECONDS, new SynchronousQueue<Runnable>());
+        tpe = new ThreadPoolExecutor(6, 12, 30, TimeUnit.SECONDS, new LinkedBlockingDeque<Runnable>());
         this.requestHandlers = requestHandlers;
     }
-    public void load(RequestOptions.Data request, int w, int h,RequestManager rm, RequestOptions options, LoadCallback callback) {
+    public EngineJob load(RequestOptions.Data request, int w, int h,RequestManager rm, RequestOptions options, LoadCallback callback) {
         EngineJob job=new EngineJob(request, w, h,rm, options, callback);
         tpe.execute(job);
-
+        return job;
     }
 
     class EngineJob implements Runnable,RequestHandler.Callback {
@@ -43,14 +44,19 @@ public class Engine {
             this.callback = callback;
             this.rm=rm;
         }
-
+        public void cancel(){
+            //取消加载
+            callback=null;
+        }
         @Override
         public void onError(Exception e) {
+            if(callback!=null)
             callback.notifyFailed();
         }
 
         @Override
         public void onResult(File file) {
+            if(callback==null)return;
             //解码和处理图片
             BitmapFactory.Options opt=new BitmapFactory.Options();
             opt.inJustDecodeBounds=true;
@@ -79,7 +85,11 @@ public class Engine {
             }
             Resource<Image> res=new Resource<Image>(options.getKey(),Image.parse(bitmap));
             rm.getCachePool().putCache(res);
+            if(callback!=null){
             callback.onResourceReady(res);
+            }else{
+                res.release();
+            }
         }
         private Bitmap circleCrop(BitmapPool pool,Bitmap bitmap,int w,int h){
             float size=Math.min(w,h)/2f;

@@ -17,7 +17,7 @@ public class RequestManager {
     }
     private void untrackOrDelegate(Target<?> target) {
         boolean isOwnedByUs = untrack(target);
-        if (!isOwnedByUs && !targetTracker.remove(target) && target.getRequest() != null) {
+        if (isOwnedByUs && !targetTracker.remove(target) && target.getRequest() != null) {
             Request request = target.getRequest();
             target.setRequest(null);
             request.clear();

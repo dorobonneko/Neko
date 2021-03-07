@@ -46,7 +46,7 @@ public class Request implements SizeReady,LoadCallback {
     }
     @Override
     public void onSizeReady(int w, int h) {
-        if (status != Status.WAITING_FOR_SIZE) {
+        if (status != Status.WAITING_FOR_SIZE||isCancelled()) {
             //如果当前状态不处于等待获取View大小，则返回结束
             return;
         }
@@ -63,7 +63,7 @@ public class Request implements SizeReady,LoadCallback {
 
     @Override
     public void onResourceReady(final Resource<Image> res) {
-        if (recycle||target.getRequest()!=Request.this) {
+        if (isCancelled()) {
             res.release();
             return;
         }
@@ -71,7 +71,7 @@ public class Request implements SizeReady,LoadCallback {
         resource = res;
         options.requestManager.getHandler().post(new Runnable(){
                 public void run() {
-                    if(recycle||target.getRequest()!=Request.this)
+                    if(isCancelled())
                         res.release();
                         else{
                            
@@ -100,6 +100,8 @@ public class Request implements SizeReady,LoadCallback {
         return status == Status.COMPLETE;
     }
     public boolean isCancelled() {
+        if(target.getRequest()!=this&&status!=Status.CANCEL)
+            throw new RuntimeException(status.name());
         return status == Status.CANCEL;
     }
     public void clear() {
@@ -108,8 +110,10 @@ public class Request implements SizeReady,LoadCallback {
         }
         target.removeCallback(this);
         status = Status.CANCEL;
+        if(job!=null){
         job.cancel();
         job=null;
+        }
         target.onLoadCleared(options.placeHolder);
         
     }

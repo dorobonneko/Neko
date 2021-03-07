@@ -66,7 +66,7 @@ public abstract class RequestOptions<T extends RequestOptions> {
                     previous.begin();
             } 
         }
-        requestManager.clear(t);;
+        requestManager.clear(t);
         t.setRequest(request);
         requestManager.track(request, t);
     }

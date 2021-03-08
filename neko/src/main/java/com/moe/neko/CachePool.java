@@ -31,5 +31,10 @@ public class CachePool implements Resource.OnResourceListener{
         lock.unlock();
     }
 
+    @Override
+    public String toString() {
+        return list.toString();
+    }
+    
     
 }

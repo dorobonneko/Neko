@@ -19,7 +19,9 @@ public class  Resource<T> {
     public String toString()
     {
         StringBuilder sb=new StringBuilder();
-        sb.append("count:").append(count);
+        sb.append("key:");
+        sb.append(key);
+        sb.append("#count:").append(count);
         return sb.toString();
     }
 

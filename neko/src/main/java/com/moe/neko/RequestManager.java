@@ -48,6 +48,9 @@ public class RequestManager {
     CachePool getCachePool(){
         return mCache;
     }
+    public String printCacheStatus(){
+        return getCachePool().toString();
+    }
     public RequestOptions load(String url){
         return new RequestOptions.RequestBitmapOptions(this,new RequestOptions.UrlData(url));
     }

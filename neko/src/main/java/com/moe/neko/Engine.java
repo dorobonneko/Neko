@@ -21,7 +21,7 @@ public class Engine {
     ThreadPoolExecutor tpe;
     private List<RequestHandler> requestHandlers;
     public Engine(List<RequestHandler> requestHandlers) {
-        tpe = new ThreadPoolExecutor(6, 12, 30, TimeUnit.SECONDS, new LinkedBlockingDeque<Runnable>());
+        tpe = new ThreadPoolExecutor(3, 3, 50, TimeUnit.SECONDS, new LinkedBlockingDeque<Runnable>());
         this.requestHandlers = requestHandlers;
     }
     public EngineJob load(RequestOptions.Data request, int w, int h,RequestManager rm, RequestOptions options, LoadCallback callback) {

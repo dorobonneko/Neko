@@ -31,7 +31,6 @@ public class Request implements SizeReady,LoadCallback {
             onResourceReady(resource);
             return;
         }
-
         status = Status.WAITING_FOR_SIZE;
         if ((options.w > 0 && options.h > 0) || options.w == -2 || options.h == -2) {
             onSizeReady(options.w, options.h);
@@ -91,7 +90,7 @@ public class Request implements SizeReady,LoadCallback {
                 }});
     }
     public boolean isRunning() {
-        return status == Status.RUNNING;
+        return status == Status.RUNNING||status==Status.WAITING_FOR_SIZE;
     }
     public void pause() {
 
@@ -100,20 +99,21 @@ public class Request implements SizeReady,LoadCallback {
         return status == Status.COMPLETE;
     }
     public boolean isCancelled() {
-        if(target.getRequest()!=this&&status!=Status.CANCEL)
-            throw new RuntimeException(status.name());
         return status == Status.CANCEL;
     }
     public void clear() {
+        if(isCancelled())return;
         if (resource!=null) {
             resource.release();
         }
+        if(target!=null)
         target.removeCallback(this);
         status = Status.CANCEL;
         if(job!=null){
         job.cancel();
         job=null;
         }
+        if(target!=null)
         target.onLoadCleared(options.placeHolder);
         
     }

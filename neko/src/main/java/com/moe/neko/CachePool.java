@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.function.Predicate;
 import java.util.Objects;
 import java.util.HashMap;
+import java.util.function.Consumer;
 
 public class CachePool implements Resource.OnResourceListener{
     private Lock lock=new ReentrantLock();
@@ -33,7 +34,18 @@ public class CachePool implements Resource.OnResourceListener{
 
     @Override
     public String toString() {
-        return list.toString();
+        final StringBuilder sb=new StringBuilder();
+        sb.append(list.size());
+        sb.append("\r\n");
+        list.values().stream().forEach(new Consumer<Resource<Image>>(){
+
+                @Override
+                public void accept(Resource<Image> p1) {
+                    sb.append(p1.toString());
+                    sb.append("\r\n");
+                }
+            });
+        return sb.toString();
     }
     
     

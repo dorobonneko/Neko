@@ -51,7 +51,7 @@ public abstract class RequestOptions<T extends RequestOptions> {
         into(new ImageViewTarget(view));
     }
     public void into(View view) {
-        into(new ViewTarget(view));
+        into(new ViewTarget<View>(view));
     }
     public void into(Target t) {
         Objects.requireNonNull(t);
@@ -62,8 +62,10 @@ public abstract class RequestOptions<T extends RequestOptions> {
         if (previous != null) {
             if (request.isEquivalentTo(previous)) {
                 request.recycle();
-                if(!previous.isRunning())
+                if(!previous.isRunning()){
                     previous.begin();
+                    return;
+                    }
             } 
         }
         requestManager.clear(t);

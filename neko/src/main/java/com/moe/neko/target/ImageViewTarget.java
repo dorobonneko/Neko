@@ -22,5 +22,10 @@ public class ImageViewTarget extends ViewTarget<ImageView>{
     public void onLoadCleared(Drawable c) {
         getView().setImageDrawable(c);
     }
+
+    @Override
+    public void onLoadFailed(Drawable e) {
+        getView().setImageDrawable(e);
+    }
     
 }

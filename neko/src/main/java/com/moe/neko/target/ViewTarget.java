@@ -4,6 +4,7 @@ import android.graphics.drawable.Drawable;
 import com.moe.neko.Target;
 import com.moe.neko.Request;
 import com.moe.neko.SizeReady;
+import android.graphics.drawable.Animatable;
 
 public class  ViewTarget<V extends View> implements Target {
     private V view;
@@ -45,6 +46,8 @@ public class  ViewTarget<V extends View> implements Target {
     @Override
     public void onLoadSuccess(Drawable s) {
         getView().setBackground(s);
+        if(s instanceof Animatable)
+            ((Animatable)s).start();
     }
 
     @Override

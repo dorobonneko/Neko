@@ -1,11 +1,13 @@
 package com.moe.neko;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+
 
 public class Request implements SizeReady,LoadCallback {
     private RequestOptions.RequestBitmapOptions options;
     private Target target;
     private Status status;
-    private Resource resource;
+    private Resource<Image> resource;
     private boolean recycle;
     private Engine mEngine;
     private Engine.EngineJob job;
@@ -59,7 +61,8 @@ public class Request implements SizeReady,LoadCallback {
         //加载图片
         job=mEngine.load(options.data, w, h, options.requestManager, options, this);
     }
-
+    Drawable image=null;
+    
     @Override
     public void onResourceReady(final Resource<Image> res) {
         if (isCancelled()) {
@@ -68,16 +71,17 @@ public class Request implements SizeReady,LoadCallback {
         }
         status = Status.COMPLETE;
         resource = res;
+        resource.acquire();
+         if(options.anime!=null)
+        image=new AnimatableDrawable(resource.image.getBitmap(),options.anime);
+        else
+            image=new BitmapDrawable(resource.image.getBitmap());
+            
         options.requestManager.getHandler().post(new Runnable(){
                 public void run() {
-                    if(isCancelled())
-                        res.release();
-                        else{
-                           
-                    res.acquire();
+                     
+                    target.onLoadSuccess(image);
                     
-                    target.onLoadSuccess(new BitmapDrawable(res.image.getBitmap()));
-                    }
                 }});
     }
 

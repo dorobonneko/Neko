@@ -10,6 +10,7 @@ import java.security.NoSuchAlgorithmException;
 import android.widget.ImageView.ScaleType;
 import android.view.View;
 import com.moe.neko.target.ViewTarget;
+import com.moe.neko.animation.Fade;
 
 public abstract class RequestOptions<T extends RequestOptions> {
     Data data;
@@ -19,13 +20,17 @@ public abstract class RequestOptions<T extends RequestOptions> {
     String key=null;
     ScaleType type;
     boolean circleCrop;
+    Anime anime;
     RequestOptions(RequestManager neko, Data data) {
         this.requestManager = neko;
         this.data = data;
     }
 
     public abstract RequestBitmapOptions asBitmap();
-
+    public T fade(long duration){
+        anime=new Fade(duration);
+        return (T)this;
+    }
     public T circleCrop() {
         circleCrop = true;
         return (T)this;
@@ -88,6 +93,8 @@ public abstract class RequestOptions<T extends RequestOptions> {
             sb.append("bitmap:" + isBitmap);
             sb.append("circleCrop" + circleCrop);
             sb.append("scaleType:" + type);
+            if(anime!=null)
+            sb.append("anime:"+anime.getId());
             if (trans != null)
                 for (Transform t:trans)
                     sb.append(t.getId());

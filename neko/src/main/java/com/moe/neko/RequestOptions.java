@@ -27,9 +27,12 @@ public abstract class RequestOptions<T extends RequestOptions> {
     }
 
     public abstract RequestBitmapOptions asBitmap();
-    public T fade(long duration){
-        anime=new Fade(duration);
+    public T fade(long duration,long delay){
+        anime=new Fade(duration,delay);
         return (T)this;
+    }
+    public T fade(long duration){
+     return fade(duration,0);
     }
     public T circleCrop() {
         circleCrop = true;

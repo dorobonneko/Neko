@@ -21,6 +21,7 @@ public class AnimatableDrawable extends Drawable implements Animatable {
         mAnimator.setDuration(this.callback.getDuration());
         mAnimator.setInterpolator(this.callback.getInterpolator());
         mAnimator.setRepeatMode(this.callback.getRepeatMode());
+        mAnimator.setStartDelay(this.callback.getStartDelay());
         mAnimator.addUpdateListener(new UpdateListener());
     }
     @Override
@@ -71,6 +72,7 @@ public class AnimatableDrawable extends Drawable implements Animatable {
         public long getDuration();
         public TimeInterpolator getInterpolator();
         public int getRepeatMode();
+        public long getStartDelay();
     }
     class UpdateListener implements ValueAnimator.AnimatorUpdateListener {
 

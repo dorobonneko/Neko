@@ -11,9 +11,13 @@ import com.moe.neko.Anime;
 
 public class Fade implements AnimatableDrawable.Callback ,Anime{
    private Paint paint;
-   private long duration;
-    public Fade(long duration){
+   private long duration,delay;
+   public Fade(long duration){
+       this(duration,0);
+   }
+    public Fade(long duration,long delay){
         this.duration=duration;
+        this.delay=delay;
         paint=new Paint();
         paint.setAntiAlias(true);
     }
@@ -22,6 +26,12 @@ public class Fade implements AnimatableDrawable.Callback ,Anime{
     public String getId() {
         return "Fade:"+duration;
     }
+
+    @Override
+    public long getStartDelay() {
+        return delay;
+    }
+
 
     
     @Override

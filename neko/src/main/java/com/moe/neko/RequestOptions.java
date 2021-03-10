@@ -11,6 +11,7 @@ import android.widget.ImageView.ScaleType;
 import android.view.View;
 import com.moe.neko.target.ViewTarget;
 import com.moe.neko.animation.Fade;
+import android.content.res.Resources;
 
 public abstract class RequestOptions<T extends RequestOptions> {
     Data data;
@@ -48,6 +49,28 @@ public abstract class RequestOptions<T extends RequestOptions> {
     }
     public T error(Drawable error) {
         this.error = error;
+        return (T)this;
+    }
+    public T placeHolder(Context c,int placeHolder) {
+        this.placeHolder = c.getResources().getDrawable(placeHolder,c.getTheme());
+        return (T)this;
+    }
+    public T error(Context c,int error) {
+        this.error = c.getResources().getDrawable(error,c.getTheme());
+        return (T)this;
+    }
+    public T placeHolder(int placeHolder) {
+        Context c=requestManager.getContext();
+        if(c!=null)
+            return placeHolder(c,placeHolder);
+        this.placeHolder = Resources.getSystem().getDrawable(placeHolder);
+        return (T)this;
+    }
+    public T error(int error) {
+        Context c=requestManager.getContext();
+        if(c!=null)
+            return error(c,error);
+        this.error = Resources.getSystem().getDrawable(error);
         return (T)this;
     }
     public T override(int w, int h) {

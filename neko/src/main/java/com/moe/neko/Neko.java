@@ -7,6 +7,7 @@ import com.moe.neko.requesthandler.RequestHandler;
 import java.util.ArrayList;
 import java.util.List;
 import com.moe.neko.requesthandler.HttpHandler;
+import android.app.Activity;
 
 public class Neko {
     private static Map<Object,RequestManager> requestManagers=new HashMap<>();
@@ -25,6 +26,11 @@ public class Neko {
                 req=requestManagers.get(obj);
                 if(req==null){
                     checkBuilder();
+                    if(obj instanceof View)
+                        builder.setContext(((View)obj).getContext());
+                        else
+                    if(obj instanceof Activity)
+                        builder.setContext((Context)obj);
                     req=builder.build(mEngine);
                     requestManagers.put(obj,req);
                     }

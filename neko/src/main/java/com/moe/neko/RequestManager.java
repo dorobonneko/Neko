@@ -6,6 +6,7 @@ import java.util.WeakHashMap;
 import java.io.File;
 import android.os.Handler;
 import android.os.Looper;
+import android.content.Context;
 
 public class RequestManager {
     Handler mHandler=new Handler(Looper.getMainLooper());
@@ -63,12 +64,20 @@ public class RequestManager {
             path.mkdirs();
         return path;
     }
+    public Context getContext(){
+        return mBuilder.context;
+    }
     public static class Builder{
         private String cachePath="/sdcard/NekoCache";
         private Engine mEngine;
+        private Context context;
         public Builder setCachePath(String path){
             Objects.requireNonNull(path);
             cachePath=path;
+            return this;
+        }
+        public Builder setContext(Context context){
+            this.context=context;
             return this;
         }
         protected RequestManager build(Engine engine){

@@ -59,6 +59,7 @@ public abstract class RequestOptions<T extends RequestOptions> {
         this.error = c.getResources().getDrawable(error,c.getTheme());
         return (T)this;
     }
+    
     public T placeHolder(int placeHolder) {
         Context c=requestManager.getContext();
         if(c!=null)
@@ -78,13 +79,13 @@ public abstract class RequestOptions<T extends RequestOptions> {
         this.h = h;
         return (T)this;
     }
-    public void into(ImageView view) {
-        into(new ImageViewTarget(view));
+    public ImageViewTarget into(ImageView view) {
+       return (ImageViewTarget)into(new ImageViewTarget(view));
     }
-    public void into(View view) {
-        into(new ViewTarget<View>(view));
+    public ViewTarget<View> into(View view) {
+       return (ViewTarget<View>)into(new ViewTarget<View>(view));
     }
-    public void into(Target t) {
+    public Target into(Target t) {
         Objects.requireNonNull(t);
         Request previous=t.getRequest();
 
@@ -95,13 +96,14 @@ public abstract class RequestOptions<T extends RequestOptions> {
                 request.recycle();
                 if(!previous.isRunning()){
                     previous.begin();
-                    return;
+                    return t;
                     }
             } 
         }
         requestManager.clear(t);
         t.setRequest(request);
         requestManager.track(request, t);
+        return t;
     }
     private Request buildRequest(Target t) {
         return new Request((RequestBitmapOptions)this, t);

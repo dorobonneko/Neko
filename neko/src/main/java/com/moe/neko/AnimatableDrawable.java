@@ -78,6 +78,7 @@ public class AnimatableDrawable extends Drawable implements Animatable {
 
         @Override
         public void onAnimationUpdate(ValueAnimator p1) {
+            if(getCallback()!=null)
             getCallback().invalidateDrawable(AnimatableDrawable.this);
         }
         

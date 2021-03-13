@@ -41,8 +41,6 @@ public class Request implements SizeReady,LoadCallback {
         }
         if (status == Status.RUNNING || status == Status.WAITING_FOR_SIZE) {
             target.onLoadStart(options.placeHolder);
-        }else{
-            throw new RuntimeException("逻辑错误");
         }
     }
     @Override

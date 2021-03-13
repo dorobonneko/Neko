@@ -1,7 +1,8 @@
 package com.moe.neko.target;
-import android.widget.ImageView;
-import android.graphics.drawable.Drawable;
 import android.graphics.drawable.Animatable;
+import android.graphics.drawable.Drawable;
+import android.view.ViewGroup;
+import android.widget.ImageView;
 
 public class ImageViewTarget extends ViewTarget<ImageView>{
     
@@ -11,6 +12,7 @@ public class ImageViewTarget extends ViewTarget<ImageView>{
 
     @Override
     public void onLoadSuccess(Drawable s) {
+        //reSize(s);
         getView().setImageDrawable(s);
         if(s instanceof Animatable)
             ((Animatable)s).start();

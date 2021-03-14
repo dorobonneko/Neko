@@ -12,7 +12,6 @@ import android.view.View.OnLayoutChangeListener;
 public class  ViewTarget<V extends View> implements Target {
     private V view;
     private SizeReady size;
-    private int width,height;
     public ViewTarget(V v){
         this.view=v;
     }
@@ -20,10 +19,7 @@ public class  ViewTarget<V extends View> implements Target {
     public void setRequest(Request request) {
         getView().setTag(request);
     }
-    public void reSize(int width,int height){
-        this.width=width;
-        this.height=height;
-            }
+    
     @Override
     public Request getRequest() {
         Object obj=getView().getTag();
@@ -91,30 +87,24 @@ public class  ViewTarget<V extends View> implements Target {
     @Override
     public void getSize(final SizeReady callback) {
         size=callback;
-        
+        if(getView().getWidth()>0){
+            int w=getView().getWidth();
+            int h=getView().getHeight();
+
+            
+            if(size!=null)
+                size.onSizeReady(w,h);
+        }else
            getView().post(new Runnable(){
 
                 @Override
                 public void run() {
-                    int width=getView().getMeasuredWidth();
-                    int height=getView().getMeasuredHeight();
+                    int w=getView().getWidth();
+                    int h=getView().getHeight();
                     
-                    if(width>0&&height>0)
-                    {
-                        
-                      /*  ViewGroup.LayoutParams params=getView().getLayoutParams();
-                        if(params.width==-1)
-                        params.width=width;
-                        else
-                            width=params.width;
-                        params.height=(int)Math.ceil(width/(double)ViewTarget.this.width*ViewTarget.this.height);
-                        getView().setLayoutParams(params);
-                        height=params.height;*/
-                        getView().setMinimumHeight((int)Math.ceil(width/(double)ViewTarget.this.width*ViewTarget.this.height));
-                       
-                    }
+                    
                     if(size!=null)
-                    size.onSizeReady(width,height);
+                    size.onSizeReady(w,h);
                 }
             });
     }

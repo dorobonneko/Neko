@@ -21,6 +21,8 @@ public class ImageViewTarget extends ViewTarget<ImageView>{
     @Override
     public void onLoadStart(Drawable d) {
         getView().setImageDrawable(d);
+        if(d instanceof Animatable)
+            ((Animatable)d).start();
     }
 
     @Override

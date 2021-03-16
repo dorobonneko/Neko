@@ -39,6 +39,8 @@ public class  ViewTarget<V extends View> implements Target {
     @Override
     public void onLoadStart(Drawable d) {
         getView().setBackground(d);
+        if(d instanceof Animatable)
+            ((Animatable)d).start();
     }
 
     @Override

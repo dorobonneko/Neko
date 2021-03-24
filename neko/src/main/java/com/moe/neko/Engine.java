@@ -162,7 +162,7 @@ public class Engine {
 
                 });
            if(!find)
-               onError(new IllegalAccessException("未找到可以处理（"+request.toString()+"）的Handler"));
+               throw new IllegalArgumentException("未找到可以处理（"+request.toString()+"）的Handler");
            
         }
 

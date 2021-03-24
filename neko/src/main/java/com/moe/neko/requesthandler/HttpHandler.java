@@ -11,7 +11,7 @@ import com.moe.neko.RequestManager;
 import java.io.RandomAccessFile;
 import java.io.FileNotFoundException;
 
-public class HttpHandler implements RequestHandler {
+public class HttpHandler extends RequestHandler {
 
     @Override
     public void dispatch(RequestOptions.Data data, RequestManager options,Callback callback) {
@@ -31,17 +31,7 @@ public class HttpHandler implements RequestHandler {
         }
     }
     
-    @Override
-    public void savedata(InputStream input, File cache) throws IOException {
-        
-            RandomAccessFile file=new RandomAccessFile(cache, "rw");
-            byte[] buff=new byte[128*1024];
-            int len=-1;
-            while((len=input.read(buff))!=-1){
-                file.write(buff,0,len);
-            }
-        
-    }
+
 
     @Override
     public boolean handle(RequestOptions.Data data) {

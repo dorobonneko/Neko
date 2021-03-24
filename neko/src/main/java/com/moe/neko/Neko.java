@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import com.moe.neko.requesthandler.HttpHandler;
 import android.app.Activity;
+import com.moe.neko.requesthandler.ContentHandler;
 
 public class Neko {
     private static Map<Object,RequestManager> requestManagers=new HashMap<>();
@@ -18,6 +19,7 @@ public class Neko {
         requestHandler=new ArrayList<>();
     mEngine=new Engine(requestHandler);
     requestHandler.add(new HttpHandler());
+    requestHandler.add(new ContentHandler());
     }
     public static RequestManager with(Object obj){
         RequestManager req=requestManagers.get(obj);

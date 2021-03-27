@@ -1,12 +1,16 @@
 package com.moe.neko;
-import java.util.Set;
-import java.util.Objects;
-import java.util.Collections;
-import java.util.WeakHashMap;
-import java.io.File;
+import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
-import android.content.Context;
+import android.view.View;
+import android.widget.ImageView;
+import java.io.File;
+import java.util.Collections;
+import java.util.Objects;
+import java.util.Set;
+import java.util.WeakHashMap;
+import com.moe.neko.target.ViewTarget;
+import com.moe.neko.target.ImageViewTarget;
 
 public class RequestManager {
     Handler mHandler=new Handler(Looper.getMainLooper());
@@ -15,6 +19,12 @@ public class RequestManager {
     Set<Target> targetTracker=Collections.newSetFromMap(new WeakHashMap<Target,Boolean>());
     public void clear(Target<?> request){
         untrackOrDelegate(request);
+    }
+    public void clear(ImageView view){
+        clear(new ImageViewTarget(view));
+    }
+    public void clear(View view){
+        clear(new ViewTarget(view));
     }
     private void untrackOrDelegate(Target<?> target) {
         boolean isOwnedByUs = untrack(target);
@@ -27,7 +37,7 @@ public class RequestManager {
     private boolean untrack(Target<?> t){
         return requestTracker.untrack(t.getRequest());
     }
-    public void track(Request request,Target t){
+    void track(Request request,Target t){
         targetTracker.add(t);
         requestTracker.runRequest(request);
         

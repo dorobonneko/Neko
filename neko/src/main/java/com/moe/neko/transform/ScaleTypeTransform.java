@@ -12,6 +12,7 @@ public class ScaleTypeTransform implements Transform {
     }
     @Override
     public Bitmap transform(BitmapPool pool, Bitmap bitmap, int outWidth, int outHeight) {
+        if(bitmap==null)return null;
         int width=bitmap.getWidth(),height=bitmap.getHeight();
         float scale=1;
         float transX=0,transY=0;
@@ -27,6 +28,8 @@ public class ScaleTypeTransform implements Transform {
                 return bitmap;
         }
         Bitmap target=pool.get(width,height,Bitmap.Config.ARGB_8888);
+        if(target==null)
+            return bitmap;
         Canvas canvas=new Canvas(target);
         canvas.scale(scale,scale);
         canvas.translate(-transX/scale,-transY/scale);

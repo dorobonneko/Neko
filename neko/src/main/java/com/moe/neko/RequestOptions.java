@@ -86,6 +86,7 @@ public abstract class RequestOptions<T extends RequestOptions> {
        return (ViewTarget<View>)into(new ViewTarget<View>(view));
     }
     public Target into(Target t) {
+        if(data.isNull())return t;
         Objects.requireNonNull(t);
         Request previous=t.getRequest();
 
@@ -174,6 +175,7 @@ public abstract class RequestOptions<T extends RequestOptions> {
     }
     public static abstract class Data {
         public abstract String getKey();
+        public abstract boolean isNull();
     }
     public static class UrlData extends Data {
         private String url;
@@ -188,6 +190,17 @@ public abstract class RequestOptions<T extends RequestOptions> {
         public String getKey() {
             return Util.upKey(url);
         }
+
+        @Override
+        public String toString() {
+            return url;
+        }
+
+        @Override
+        public boolean isNull() {
+            return url==null||"null".equals(url)||"undefined".equals(url);
+        }
+
 
 
     }
@@ -204,6 +217,17 @@ public abstract class RequestOptions<T extends RequestOptions> {
             return Util.upKey("resource:" + id);
 
         }
+
+        @Override
+        public String toString() {
+            return "id:"+id;
+        }
+
+        @Override
+        public boolean isNull() {
+            return id<=0;
+        }
+
 
 
     }
